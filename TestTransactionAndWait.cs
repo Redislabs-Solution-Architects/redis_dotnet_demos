@@ -173,12 +173,24 @@ public class TestTransactionAndWait
         var firstIntBeforeWait = int.Parse((string)resultBeforeWait[0]);
         var secondIntBeforeWait = int.Parse((string)resultBeforeWait[1]);
 
+        // WAIT numreplicas timeout
+        // summary: Wait for the synchronous replication of all the write commands sent in the context of the current connection
+        // since: 3.0.0
+        // group: generic
+        // anything but 0 (WAIT forever) as timeout otherwise you'll get a timeout exception if slave is down longer than the syncTimeout
+        // because of the default syncTimeout=5000ms. either increase the value of syncTimeout e.g. 
+        // syncTimeout=100000 or use >0
+        // see configurations https://stackexchange.github.io/StackExchange.Redis/Configuration.html
+        // see the https://stackexchange.github.io/StackExchange.Redis/Timeouts for details
+
         RedisResult waitResult = txn_redis.Execute("WAIT", "1", "50");
         var waitResultResp = (RedisResult)waitResult;
         var numreplicas = int.Parse((string)waitResultResp);
-        Console.WriteLine($"** REPLICA UP ==> numreplicas = {numreplicas}");
+        
         if (numreplicas != 1) {
             Console.WriteLine($"** REPLICA DOWN ==> numreplicas = {numreplicas}");
+        } else {
+            Console.WriteLine($"** REPLICA UP ==> numreplicas = {numreplicas}");
         }
 
         RedisResult timeAfterWait = txn_redis.Execute("TIME");
