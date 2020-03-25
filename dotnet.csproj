@@ -1,9 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <RootNamespace>redisdotnetdemo</RootNamespace>
+    <AssemblyName>redisdotnetdemo</AssemblyName>    
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="StackExchange.Redis" Version="2.0.601"/>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="RedisConnection.cs" />
+    <Compile Include="TestClustering.cs" />
+    <Compile Include="TestTransactionAndWait.cs" />
+  </ItemGroup>  
 </Project>
