@@ -12,7 +12,6 @@ namespace redisdotnetdemo
 {
     /// <summary>
     /// Connect to individual shard shard: https://azure.microsoft.com/en-us/documentation/articles/cache-how-to-premium-clustering/
-    /// redis-cli.exe -h cachename.redis.cache.windows.net -a password -p 13000
     /// </summary>
     public static class TestClustering
     {
