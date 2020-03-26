@@ -39,8 +39,17 @@ namespace redisdotnetdemo
                 Console.WriteLine("e.g. redis-12000.cluster4.virag.demo-rlec.redislabs.com:12000 1");
                 return;
             }
+
+            var watch = System.Diagnostics.Stopwatch.StartNew();
             TestTransactionAndWait.Run();
+            watch.Stop();
+            Console.WriteLine($"\nTestTransactionAndWait:: Total Execution Time: {watch.ElapsedMilliseconds} ms");
+            //if (!watch.IsRunning)
+            //     watch.Restart(); // Reset time to 0 and start measuring
             //TestClustering.Run();
+            //watch.Stop();
+            //Console.WriteLine($"\TestClustering:: Total Execution Time: {watch.ElapsedMilliseconds} ms");
+
             // destroy the connections 
             RedisConnection.Conn_Txn.Dispose();
             RedisConnection.Conn_NonTxn.Dispose();
