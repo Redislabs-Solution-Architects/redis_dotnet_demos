@@ -8,7 +8,6 @@ namespace redisdotnetdemo
     {
         public static void Run()
         {
-            var hashKey = "userHashKey:{1234}";
             var watch = System.Diagnostics.Stopwatch.StartNew();
 
             IDatabase txn_redis = RedisConnection.Conn_Txn.GetDatabase();
@@ -32,6 +31,8 @@ namespace redisdotnetdemo
             // do all non transactional writes and reads on another redis connection i.e. non_txn_redis 
             for (int i = 1; i <= Program.iter; i++)
             {
+                var hashKey = "userHashKey:{" + i + "}";
+
                 if (!watch.IsRunning)
                      watch.Restart(); // Reset time to 0 and start measuring
                 Console.WriteLine("\n------ Begin Iteration {0}", i + " ------");
@@ -66,19 +67,17 @@ namespace redisdotnetdemo
                 {
                     Console.WriteLine(string.Format("key : {0}, value : {1}", item.Name, item.Value));
                 }
-                Console.WriteLine("\n------ End Iteration {0}", i + " ------");
-                //}
                 watch.Stop();
                 Console.WriteLine($"\nResponse from non-transaction in RE DB, Execution Time: {watch.ElapsedMilliseconds} ms");
 
                 if (!watch.IsRunning)
                     watch.Restart(); // Reset time to 0 and start measuring
-                                     // do all transactional writes on dedicated redis connection i.e. txn_redis
+                // do all transactional writes on dedicated redis connection i.e. txn_redis
                 var trans1 = txn_redis.CreateTransaction();
                 txn_redis.HashSet(hashKey, redisPersonHash1);
                 bool exec1 = trans1.Execute();
                 if (exec1 != true) {
-                    Console.WriteLine($"1nd transaction not applied");
+                    Console.WriteLine($"1nd transaction rolled back");
                 } else {
                     Console.WriteLine($"1nd transaction applied");
                 }
@@ -131,17 +130,16 @@ namespace redisdotnetdemo
                 txn_redis.HashSet(hashKey, redisPersonHash2);
                 bool exec2 = trans2.Execute();
                 if (exec2 != true) {
-                    Console.WriteLine($"2nd transaction not applied");
+                    Console.WriteLine($"2nd transaction rolled back");
                 } else {
                     Console.WriteLine($"2nd transaction applied");
                 }
-
                 // ^^^ if true: it was applied; if false: it was rolled back
-                // add additional logic for cleanup if necessary
                 watch.Stop();
                 Console.WriteLine($"Response from 2nd transaction in RE DB (without WAIT), Execution Time: {watch.ElapsedMilliseconds} ms\n");
-
+                Console.WriteLine("------ End Iteration {0}", i + " ------");
             }
+
             // destroy the connections 
             RedisConnection.Conn_Txn.Dispose();
             RedisConnection.Conn_NonTxn.Dispose();
